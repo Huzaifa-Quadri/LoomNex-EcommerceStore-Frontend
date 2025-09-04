@@ -1,0 +1,162 @@
+<html>
+  <head>
+    <link crossorigin href="https://fonts.gstatic.com/" rel="preconnect" />
+    <link
+      as="style"
+      href="https://fonts.googleapis.com/css2?display=swap&family=Noto+Sans:wght@400;500;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800"
+      onload="this.rel='stylesheet'"
+      rel="stylesheet"
+    />
+    <meta charset="utf-8" />
+    <title>Electronics | LoomNex</title>
+    <link href="data:image/x-icon;base64," rel="icon" type="image/x-icon" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <style type="text/tailwindcss">
+      :root {
+        --primary-color: #ea2a33;
+      }
+
+      /* Skeleton loading animation */
+      .skeleton {
+        background: linear-gradient(
+          90deg,
+          #e5e7eb 25%,
+          #f3f4f6 37%,
+          #e5e7eb 63%
+        );
+        background-size: 400% 100%;
+        animation: shimmer 1.4s ease infinite;
+      }
+      @keyframes shimmer {
+        0% {
+          background-position: -468px 0;
+        }
+        100% {
+          background-position: 468px 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-50">
+    <div
+      class="min-h-screen flex flex-col bg-white"
+      style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif"
+    >
+      <!-- Header -->
+      <header class="flex items-center justify-between border-b px-10 py-4">
+        <div class="flex items-center gap-8">
+          <a
+            class="flex items-center gap-3 text-2xl font-bold text-stone-800"
+            href="#"
+          >
+            <svg
+              class="h-8 w-8 text-[var(--primary-color)]"
+              fill="none"
+              viewBox="0 0 48 48"
+            >
+              <path
+                d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                fill="currentColor"
+              ></path>
+            </svg>
+            LoomNex
+          </a>
+          <nav class="hidden items-center gap-8 md:flex">
+            <a href="index.html" class="text-stone-600 hover:text-stone-900"
+              >Home</a
+            >
+            <a
+              href="electronics.html"
+              class="text-stone-600 hover:text-stone-900"
+              >Electronics</a
+            >
+            <a href="clothing.html" class="text-stone-600 hover:text-stone-900"
+              >Clothing</a
+            >
+            <a href="#" class="text-stone-600 hover:text-stone-900">About Us</a>
+          </nav>
+        </div>
+        <div class="flex gap-2">
+          <a href="cart.html">
+            <button
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200"
+            >
+              <span class="material-symbols-outlined">shopping_cart</span>
+            </button>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main class="flex-1">
+        <div class="mx-auto max-w-7xl px-6 py-8">
+          <h1 class="text-4xl font-bold text-gray-900">Electronics</h1>
+          <p class="mt-2 text-lg text-gray-600">
+            Explore the latest in tech, from personal audio to smart displays.
+          </p>
+
+          <!-- Controls -->
+          <div class="flex items-center justify-between mt-6 mb-4">
+            <h2 class="text-xl font-bold text-gray-900">All Electronics</h2>
+            <div class="flex items-center gap-2">
+              <label class="text-sm font-medium text-gray-700" for="sort-by"
+                >Sort by:</label
+              >
+              <select
+                id="sort-by"
+                class="rounded-full border-gray-300 text-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)]"
+              >
+                <option value="popular">Most Popular</option>
+                <option value="newest">Newest</option>
+                <option value="low-high">Price: Low to High</option>
+                <option value="high-low">Price: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Electronics Grid -->
+          <div
+            id="electronics-container"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+          ></div>
+          <div
+            id="electronics-empty"
+            class="hidden text-center py-10 text-gray-500 text-lg"
+          >
+            No electronics found.
+          </div>
+
+          <!-- Gadgets Section -->
+          <div class="flex items-center justify-between mt-10 mb-4">
+            <h2 class="text-xl font-bold text-gray-900">Gadgets</h2>
+          </div>
+          <div
+            id="gadgets-container"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+          ></div>
+          <div
+            id="gadgets-empty"
+            class="hidden text-center py-10 text-gray-500 text-lg"
+          >
+            No gadgets found.
+          </div>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="bg-gray-100">
+        <div class="mx-auto max-w-7xl px-6 py-8 text-center text-gray-500">
+          © 2025 LoomNex. All rights reserved.
+        </div>
+      </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/electronics.js"></script>
+  </body>
+</html>

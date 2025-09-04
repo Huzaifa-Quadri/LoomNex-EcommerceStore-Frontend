@@ -1,0 +1,154 @@
+<html>
+  <head>
+    <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect" />
+    <link
+      as="style"
+      href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Plus+Jakarta+Sans%3Awght%40400%3B500%3B700%3B800"
+      onload="this.rel='stylesheet'"
+      rel="stylesheet"
+    />
+    <meta charset="utf-8" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
+    <style type="text/tailwindcss">
+      :root {
+        --primary-color: #ea2a33;
+      }
+    </style>
+    <title>Home Page</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <div
+      class="relative flex size-full min-h-screen flex-col bg-white group/design-root overflow-x-hidden"
+      style="font-family: 'Plus Jakarta Sans', 'Noto Sans', sans-serif"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <!-- ✅ Navbar -->
+        <header class="flex items-center justify-between border-b px-10 py-4">
+          <div class="flex items-center gap-8">
+            <a
+              class="flex items-center gap-3 text-2xl font-bold text-stone-800"
+              href="#"
+            >
+              <svg
+                class="h-8 w-8 text-[var(--primary-color)]"
+                fill="none"
+                viewBox="0 0 48 48"
+              >
+                <path
+                  d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                  fill="currentColor"
+                ></path>
+              </svg>
+              LoomNex
+            </a>
+            <nav class="hidden items-center gap-8 md:flex">
+              <a href="index.html" class="text-stone-600 hover:text-stone-900"
+                >Home</a
+              >
+              <a
+                href="electronics.html"
+                class="text-stone-600 hover:text-stone-900"
+                >Electronics</a
+              >
+              <a
+                href="clothing.html"
+                class="text-stone-600 hover:text-stone-900"
+                >Clothing</a
+              >
+              <a href="#" class="text-stone-600 hover:text-stone-900"
+                >About Us</a
+              >
+            </nav>
+          </div>
+          <div class="flex gap-2">
+            <a href="cart.html">
+              <button
+                class="flex h-10 w-10 items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200"
+              >
+                <span class="material-symbols-outlined">shopping_cart</span>
+              </button>
+            </a>
+          </div>
+        </header>
+
+        <!-- ✅ Hero Carousel -->
+        <main class="flex flex-1 flex-col py-10">
+          <!-- Here is thje Carousel -->
+          <div class="relative w-full overflow-hidden">
+            <div class="flex animate-carousel">
+              <div class="relative min-w-full">
+                <img
+                  alt="Summer Collection"
+                  class="h-[500px] w-full object-cover"
+                  src="https://picsum.photos/1200/500?random=1"
+                />
+                <div class="absolute inset-0 bg-black/40"></div>
+                <div
+                  class="absolute inset-0 flex flex-col items-center justify-center text-center text-white"
+                >
+                  <h1 class="text-5xl font-bold">Summer Collection</h1>
+                  <p class="mt-4 text-lg">
+                    Explore the latest trends and styles for this season.
+                  </p>
+                  <button
+                    class="mt-8 rounded-full bg-[var(--primary-color)] px-8 py-3 text-lg font-bold hover:bg-red-700"
+                  >
+                    Shop Now
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ✅ Trending Section -->
+          <div class="container mx-auto mt-12 px-4 sm:px-6 lg:px-8">
+            <section class="mb-12">
+              <h2 class="mb-6 text-3xl font-bold text-stone-800">
+                New Trending
+              </h2>
+              <div
+                id="trending-products"
+                class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+              >
+                <!-- JS will inject products here -->
+              </div>
+            </section>
+
+            <!-- ✅ Categories Section -->
+            <section class="mb-12">
+              <h2 class="mb-6 text-3xl font-bold text-stone-800">
+                Shop by Category
+              </h2>
+              <div
+                id="categories"
+                class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4"
+              >
+                <!-- JS will inject categories here -->
+              </div>
+            </section>
+
+            <!-- ✅ General Products Section -->
+            <section>
+              <h2 class="mb-6 text-3xl font-bold text-stone-800">
+                Trending Products
+              </h2>
+              <div
+                id="all-products"
+                class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+              >
+                <!-- JS will inject products here -->
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ✅ Load JS -->
+    <script src="js/index.js"></script>
+  </body>
+</html>
