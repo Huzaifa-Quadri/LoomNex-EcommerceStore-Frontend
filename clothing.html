@@ -65,12 +65,13 @@
           </nav>
         </div>
         <div class="flex gap-2">
-          <a href="cart.html">
+          <a href="cart.html" class="relative">
             <button
-              class="flex h-10 w-10 items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200"
-            >
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200">
               <span class="material-symbols-outlined">shopping_cart</span>
             </button>
+            <!-- Cart counter badge -->
+            <span id="cart-count" class="absolute -top-1 -right-1 bg-[var(--primary-color)] text-white text-xs rounded-full p-1 w-6 h-6 text-center aspect-square hidden">0</span>
           </a>
         </div>
       </header>
@@ -134,11 +135,14 @@
               class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
             >
               <!-- JS will inject products here -->
-              <script src="js/clothing.js"></script>
             </div>
           </div>
         </div>
       </main>
     </div>
+    
+    <!-- Scripts -->
+    <script src="js/cart.js"></script>
+    <script src="js/clothing.js"></script>
   </body>
 </html>

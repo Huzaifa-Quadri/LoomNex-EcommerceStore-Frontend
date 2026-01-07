@@ -1,38 +1,119 @@
-// js/cart.js
+// js/cart.js - Shared Cart Functionality
+// This file handles cart operations across all pages and provides a unified cart experience
 
 (function () {
   const CART_KEY = "loomnex_cart";
 
   // ---- Local storage helpers ----
   function loadCart() {
-    return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    try {
+      return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    } catch (error) {
+      console.error("Error loading cart from localStorage:", error);
+      return [];
+    }
   }
 
   function saveCart(cart) {
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+    try {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      updateCartCounter(); // Update cart counter whenever cart is saved
+    } catch (error) {
+      console.error("Error saving cart to localStorage:", error);
+    }
+  }
+
+  // ---- Cart counter functionality ----
+  function updateCartCounter() {
+    const cart = loadCart();
+    const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    
+    // Update cart counter badge if it exists
+    const cartCountElement = document.getElementById("cart-count");
+    if (cartCountElement) {
+      cartCountElement.textContent = totalItems;
+      cartCountElement.style.display = totalItems > 0 ? "block" : "none";
+    }
+    
+    // Dispatch cart update event for other components to listen
+    window.dispatchEvent(new CustomEvent("cart:updated", { 
+      detail: { totalItems, cart } 
+    }));
   }
 
   // ---- Core cart functions ----
+  // Global function that can be called from any page to add items to cart
   window.addToCart = function (id, name, price, imageUrl) {
-    let cart = loadCart();
-    const index = cart.findIndex((item) => item.id === id);
+    try {
+      // Normalize input parameters
+      const productId = typeof id === "string" && id.match(/^\d+$/) ? Number(id) : id;
+      const productName = String(name || "Unnamed Product");
+      const productPrice = Number(price) || 0;
+      const productImage = imageUrl || "https://via.placeholder.com/200x200.png?text=Product";
 
-    if (index !== -1) {
-      cart[index].quantity += 1;
-    } else {
-      cart.push({
-        id,
-        name,
-        price: Number(price),
-        imageUrl:
-          imageUrl || "https://via.placeholder.com/200x200.png?text=Product",
-        quantity: 1,
-      });
+      let cart = loadCart();
+      const index = cart.findIndex((item) => item.id === productId);
+
+      if (index !== -1) {
+        // Product already exists, increment quantity
+        cart[index].quantity += 1;
+        console.log(`Updated quantity for ${productName} to ${cart[index].quantity}`);
+      } else {
+        // New product, add to cart
+        cart.push({
+          id: productId,
+          name: productName,
+          price: productPrice,
+          imageUrl: productImage,
+          quantity: 1,
+        });
+        console.log(`Added new product: ${productName} to cart`);
+      }
+
+      saveCart(cart);
+      
+      // Only render cart if we're on the cart page
+      if (document.querySelector(".divide-y.divide-gray-200")) {
+        renderCart();
+      }
+      
+      // Show success feedback
+      showCartFeedback(`${productName} added to cart!`);
+      
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      showCartFeedback("Error adding item to cart", "error");
     }
-
-    saveCart(cart);
-    renderCart();
   };
+
+  // ---- Cart feedback function ----
+  function showCartFeedback(message, type = "success") {
+    // Create or update a toast notification
+    let toast = document.getElementById("cart-toast");
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "cart-toast";
+      toast.className = "fixed bottom-10 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white font-medium transition-all duration-300";
+      document.body.appendChild(toast);
+    }
+    
+    toast.textContent = message;
+    toast.className = `fixed bottom-10 right-4 z-50 px-4 py-2 rounded-lg shadow-lg text-white font-medium transition-all duration-300 ${
+      type === "error" ? "bg-red-500" : "bg-green-500"
+    }`;
+    
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      if (toast) {
+        toast.style.opacity = "0";
+        setTimeout(() => {
+          if (toast && toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+          }
+        }, 300);
+      }
+    }, 3000);
+  }
 
   function removeItem(id) {
     let cart = loadCart().filter((item) => item.id !== id);
@@ -200,11 +281,35 @@
   }
 
   // ---- Listen for addToCart events globally ----
+  // This allows other pages to dispatch events that cart.js will handle
   window.addEventListener("cart:add", (e) => {
     const { id, name, price, imageUrl } = e.detail;
     window.addToCart(id, name, price, imageUrl);
   });
 
-  // ---- Initial render ----
-  renderCart();
+  // ---- Utility functions for other pages ----
+  // Expose cart utilities for other pages to use
+  window.cartUtils = {
+    getCartCount: () => {
+      const cart = loadCart();
+      return cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    },
+    getCartItems: () => loadCart(),
+    clearCart: () => {
+      saveCart([]);
+      if (document.querySelector(".divide-y.divide-gray-200")) {
+        renderCart();
+      }
+    }
+  };
+
+  // ---- Initialize cart counter on page load ----
+  // Update cart counter when the page loads
+  updateCartCounter();
+
+  // ---- Initial render (only on cart page) ----
+  // Only render cart if we're on the cart page
+  if (document.querySelector(".divide-y.divide-gray-200")) {
+    renderCart();
+  }
 })();

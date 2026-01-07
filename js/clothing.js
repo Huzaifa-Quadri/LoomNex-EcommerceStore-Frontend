@@ -319,10 +319,11 @@
           ).toFixed(2)}</p>
         </div>
         <button
-          class="mt-3 w-full rounded-lg bg-[var(--primary-color)] text-white py-2 px-3 text-sm font-medium hover:bg-red-600 transition"
-          onclick="addToCart(${JSON.stringify(getId(p))}, ${JSON.stringify(
-        getName(p)
-      )}, ${JSON.stringify(getPrice(p))})"
+          class="add-to-cart-btn mt-3 w-full rounded-lg bg-[var(--primary-color)] text-white py-2 px-3 text-sm font-medium hover:bg-red-600 transition"
+          data-id="${getId(p)}"
+          data-name="${getName(p)}"
+          data-price="${getPrice(p)}"
+          data-image="${getImg(p)}"
         >
           Add to Cart
         </button>
@@ -330,6 +331,7 @@
 
       productGrid.appendChild(card);
     });
+    attachCartListeners();
   }
 
   // ---------- Price slider + search ----------
@@ -398,28 +400,28 @@
     }
   }
 
-  // ---------- Cart hook (leave scope for cart.js) ----------
-  // Expose a global function so cart.js can intercept/override later.
-  // Also dispatch a DOM CustomEvent for decoupled communication.
-  window.addToCart = function (id, name, price) {
-    try {
-      // Fire an event that cart.js can listen to
-      const evt = new CustomEvent("cart:add", {
-        detail: { id, name, price, source: "clothing" },
+  // ---------- Cart integration ----------
+  // Add event listeners for add to cart buttons
+  function attachCartListeners() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const id = this.dataset.id;
+        const name = this.dataset.name;
+        const price = this.dataset.price;
+        const image = this.dataset.image;
+        console.log('Button clicked with data:', { id, name, price, image });
+        // Call the global addToCart function from cart.js
+        if (window.addToCart) {
+          window.addToCart(id, name, price, image);
+        } else {
+          console.error('window.addToCart not found!');
+        }
       });
-      window.dispatchEvent(evt);
+    });
+  }
 
-      // Optionally keep a lightweight queue in localStorage for later processing
-      const key = "loomnex_pending_cart_adds";
-      const existing = JSON.parse(localStorage.getItem(key) || "[]");
-      existing.push({ id, name, price, ts: Date.now(), source: "clothing" });
-      localStorage.setItem(key, JSON.stringify(existing));
-
-      console.info(`[cart] addToCart ->`, { id, name, price });
-    } catch (e) {
-      console.error("addToCart error:", e);
-    }
-  };
+  // Cart integration - Local addToCart function removed
+  // The global window.addToCart from cart.js will handle all cart operations
 
   // ---------- Boot ----------
   fetchProducts();

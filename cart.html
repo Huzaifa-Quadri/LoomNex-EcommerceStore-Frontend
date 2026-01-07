@@ -44,14 +44,17 @@
           <a href="#" class="text-stone-600 hover:text-stone-900">About Us</a>
         </nav>
       </div>
-      <div
-        class="max-w-7xl mx-auto flex items-center justify-between px-6 py-4"
-      >
+      <div class="flex items-center gap-4">
         <a
           href="index.html"
           class="text-sm font-medium text-[var(--primary-color)] hover:underline"
           >Continue Shopping</a
         >
+        <!-- Cart counter will be updated by cart.js -->
+        <div class="relative">
+          <span class="text-sm text-gray-600">Cart Items:</span>
+          <span id="cart-count" class="ml-1 px-2 py-1 bg-[var(--primary-color)] text-white text-xs rounded-full">0</span>
+        </div>
       </div>
     </header>
 

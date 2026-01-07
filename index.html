@@ -65,12 +65,14 @@
             </nav>
           </div>
           <div class="flex gap-2">
-            <a href="cart.html">
+            <a href="cart.html" class="relative">
               <button
                 class="flex h-10 w-10 items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200"
               >
                 <span class="material-symbols-outlined">shopping_cart</span>
               </button>
+              <!-- Cart counter badge -->
+              <span id="cart-count" class="absolute -top-1 -right-1 bg-[var(--primary-color)] text-white text-xs rounded-full p-1 w-6 h-6 text-center aspect-square hidden">0</span>
             </a>
           </div>
         </header>
@@ -149,6 +151,7 @@
     </div>
 
     <!-- ✅ Load JS -->
+    <script src="js/cart.js"></script>
     <script src="js/index.js"></script>
   </body>
 </html>

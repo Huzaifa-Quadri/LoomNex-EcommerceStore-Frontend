@@ -23,6 +23,7 @@ function renderTrending(products) {
   products.slice(0, 4).forEach((p) => {
     container.insertAdjacentHTML("beforeend", productCard(p));
   });
+  attachCartListeners();
 }
 
 // Render Categories (unique categories from products)
@@ -55,6 +56,7 @@ function renderAllProducts(products) {
   products.forEach((p) => {
     container.insertAdjacentHTML("beforeend", productCard(p));
   });
+  attachCartListeners();
 }
 
 // Product Card Template
@@ -74,8 +76,11 @@ function productCard(p) {
             <span class="text-sm text-stone-600">${p.rating || "4.5"}</span>
           </div>
         </div>
-        <button onclick="addToCart(${p.id})" 
-          class="mt-4 w-full rounded-full bg-stone-800 px-4 py-2 text-white hover:bg-stone-900">
+        <button class="add-to-cart-btn mt-4 w-full rounded-full bg-stone-800 px-4 py-2 text-white hover:bg-stone-900 transition-colors"
+                data-id="${p.id}" 
+                data-name="${p.name}" 
+                data-price="${p.price}" 
+                data-image="${p.imageUrl || "https://picsum.photos/300/200"}">
           Add to Cart
         </button>
       </div>
@@ -83,10 +88,27 @@ function productCard(p) {
   `;
 }
 
-// Dummy cart function (replace later with real cart.js)
-function addToCart(id) {
-  alert(`Product ${id} added to cart`);
+// Add event listeners for add to cart buttons
+function attachCartListeners() {
+  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = this.dataset.id;
+      const name = this.dataset.name;
+      const price = this.dataset.price;
+      const image = this.dataset.image;
+      console.log('Button clicked with data:', { id, name, price, image });
+      // Call the global addToCart function from cart.js
+      if (window.addToCart) {
+        window.addToCart(id, name, price, image);
+      } else {
+        console.error('window.addToCart not found!');
+      }
+    });
+  });
 }
+
+// Cart integration - Local addToCart function removed
+// The global window.addToCart from cart.js will handle all cart operations
 
 // Run
 fetchProducts();
@@ -167,64 +189,11 @@ function initCarousel(slideCount) {
 // 👉 Add inside fetchProducts after renderTrending:
 renderCarousel(products);
 
-//Cart functionality
-// 🔹 GLOBAL CART BRIDGE - paste once per page (or in a shared js file included on all pages)
-window.addToCart = function (id, name, price, imageUrl) {
-  try {
-    // normalize types
-    const pid = typeof id === "string" && id.match(/^\d+$/) ? Number(id) : id;
-    const pprice = Number(price) || 0;
-    const pname = name || "";
-    const pimg = imageUrl || null;
-
-    // load cart
-    const CART_KEY = "loomnex_cart";
-    const raw = localStorage.getItem(CART_KEY);
-    const cart = raw ? JSON.parse(raw) : [];
-
-    // find existing item by id (coerce to Number if possible)
-    const idx = cart.findIndex((item) => {
-      // support numeric or string ids
-      if (item.id === pid) return true;
-      if (typeof item.id === "number" && typeof pid === "string")
-        return String(item.id) === pid;
-      if (typeof item.id === "string" && typeof pid === "number")
-        return item.id === String(pid);
-      return false;
-    });
-
-    if (idx > -1) {
-      cart[idx].quantity = (cart[idx].quantity || 1) + 1;
-    } else {
-      cart.push({
-        id: pid,
-        name: pname,
-        price: pprice,
-        imageUrl: pimg,
-        quantity: 1,
-      });
-    }
-
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-
-    // Update any visible cart counter (if you have an element with id="cart-count")
-    const badge = document.getElementById("cart-count");
-    if (badge) {
-      const total = cart.reduce((s, it) => s + (it.quantity || 0), 0);
-      badge.textContent = String(total);
-    }
-
-    // Dispatch an event so cart.js or other listeners can respond
-    window.dispatchEvent(
-      new CustomEvent("cart:add", {
-        detail: { id: pid, name: pname, price: pprice, imageUrl: pimg },
-      })
-    );
-
-    // optional: small UI feedback (can be replaced by a nicer toast)
-    // alert(`${pname} added to cart`);
-    console.info(`Added to cart: ${pname} (${pid})`);
-  } catch (err) {
-    console.error("addToCart error:", err);
-  }
-};
+// Cart integration comments:
+// The cart.js file will override the addToCart function above when it loads
+// This ensures consistent cart functionality across all pages
+// The cart.js file handles:
+// - localStorage persistence
+// - Cart counter updates
+// - Toast notifications
+// - Cart rendering on cart page

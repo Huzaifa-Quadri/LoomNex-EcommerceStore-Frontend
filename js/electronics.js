@@ -287,21 +287,40 @@ function renderCards(container, items) {
         ).toFixed(2)}</p>
       </div>
       <button 
-        class="mt-3 w-full rounded-lg bg-[var(--primary-color)] text-white py-2 px-3 text-sm font-medium hover:bg-red-600 transition"
-        onclick="addToCart(${p.id}, '${p.name}', ${p.price})">
+        class="add-to-cart-btn mt-3 w-full rounded-lg bg-[var(--primary-color)] text-white py-2 px-3 text-sm font-medium hover:bg-red-600 transition"
+        data-id="${p.id}"
+        data-name="${p.name}"
+        data-price="${p.price}"
+        data-image="${p.imageUrl || 'https://via.placeholder.com/600x600?text=Product'}">
         Add to Cart
       </button>
     `;
     container.appendChild(card);
   });
+  attachCartListeners();
 }
 
-// Placeholder cart function
-function addToCart(id, name, price) {
-  console.log(`Added to cart: ${name} ($${price}) [ID: ${id}]`);
-  // Later: Save to localStorage/sessionStorage or call backend
-  alert(`${name} added to cart!`);
+// Add event listeners for add to cart buttons
+function attachCartListeners() {
+  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const id = this.dataset.id;
+      const name = this.dataset.name;
+      const price = this.dataset.price;
+      const image = this.dataset.image;
+      console.log('Button clicked with data:', { id, name, price, image });
+      // Call the global addToCart function from cart.js
+      if (window.addToCart) {
+        window.addToCart(id, name, price, image);
+      } else {
+        console.error('window.addToCart not found!');
+      }
+    });
+  });
 }
+
+// Cart integration - Local addToCart function removed
+// The global window.addToCart from cart.js will handle all cart operations
 
 function sortProducts(list, mode) {
   const items = [...list];
@@ -353,7 +372,14 @@ function applySortToAll() {
   }
 }
 
-//* Function to add product to cart on click
+// Cart integration comments:
+// The cart.js file will override the addToCart function above when it loads
+// This ensures consistent cart functionality across all pages
+// The cart.js file handles:
+// - localStorage persistence
+// - Cart counter updates
+// - Toast notifications
+// - Cart rendering on cart page
 
 // Initial load
 loadSection("electronics", "Electronics");
