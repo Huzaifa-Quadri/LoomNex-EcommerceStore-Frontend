@@ -1,8 +1,17 @@
-import { Link, NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useCart } from "../../hooks/useCart";
+import { AuthContext } from "../../../auth/context/AuthContext";
 
 export default function Navbar() {
   const { cartCount } = useCart();
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
 
   const navLinks = [
     { to: "/", label: "Home" },
@@ -50,14 +59,47 @@ export default function Navbar() {
         </nav>
       </div>
 
-      {/* Right — Cart */}
-      <div className="flex gap-2">
-        <Link to="/cart" className="relative">
-          <button className="flex h-10 w-10 items-center justify-center rounded-full bg-stone-100 hover:bg-stone-200 transition-colors cursor-pointer">
-            <span className="material-symbols-outlined">shopping_cart</span>
+      {/* Right — Auth & Cart */}
+      <div className="flex gap-4 items-center">
+        {user ? (
+          <div className="flex items-center gap-3 border-r border-stone-200 pr-4">
+            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm">
+              {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="text-sm font-medium text-stone-600 hover:text-red-600 transition-colors cursor-pointer"
+            >
+              Logout
+            </button>
+          </div>
+        ) : (
+          <div className="hidden sm:flex items-center gap-3 border-r border-stone-200 pr-4">
+            <Link to="/login" className="text-sm font-medium text-stone-600 hover:text-stone-900 transition-colors">
+              Log in
+            </Link>
+            <Link to="/signup" className="rounded-full bg-stone-900 px-4 py-2 text-sm font-medium text-white hover:bg-stone-800 transition-colors">
+              Sign up
+            </Link>
+          </div>
+        )}
+
+        {/* Cart Icon - Protect with Auth Check */}
+        <Link
+          to={user ? "/cart" : "/login"}
+          onClick={(e) => {
+            if (!user) {
+              e.preventDefault();
+              navigate("/login");
+            }
+          }}
+          className="relative group"
+        >
+          <button className="flex h-10 w-10 items-center justify-center rounded-full bg-stone-100 group-hover:bg-stone-200 transition-colors cursor-pointer">
+            <span className="material-symbols-outlined text-stone-700">shopping_cart</span>
           </button>
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-white">
+          {cartCount > 0 && user && (
+            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
               {cartCount}
             </span>
           )}

@@ -1,29 +1,56 @@
-import { Link } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
+import { AuthContext } from "../../auth/context/AuthContext";
+import { placeOrder } from "../api/orderApi";
 import toast from "react-hot-toast";
 
 export default function CartPage() {
   const { cartItems, removeFromCart, changeQuantity, clearCart, totals } =
     useCart();
 
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  // Protect against direct manual navigation to /cart
+  useEffect(() => {
+    if (!user) {
+      toast.error("Please login to view your cart");
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
   const { subtotal, tax, shipping, total } = totals;
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (cartItems.length === 0) {
       toast.error("Your cart is empty!");
       return;
     }
 
-    const orderPayload = {
-      productQuantities: Object.fromEntries(
-        cartItems.map((item) => [item.id, item.quantity]),
-      ),
-      totalAmount: total,
-    };
+    // Auth Check
+    if (!user) {
+      toast.error("Please log in to proceed to checkout");
+      navigate("/login");
+      return;
+    }
 
-    console.log("Checkout → send to backend:", orderPayload);
-    toast.success("Order placed! (Simulated — integrate with backend API)");
-    clearCart();
+    try {
+      setIsCheckingOut(true);
+      // Fallback ID to "1" assuming user context might only track email initially
+      const userId = user.id || "1";
+
+      await placeOrder(userId, cartItems);
+
+      toast.success("Order placed successfully!");
+      clearCart();
+      navigate("/");
+    } catch (err) {
+      toast.error(err.message || "Failed to place order.");
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   return (
@@ -151,9 +178,14 @@ export default function CartPage() {
 
               <button
                 onClick={handleCheckout}
-                className="w-full mt-6 flex items-center justify-center rounded-full h-12 px-5 bg-primary text-white text-base font-bold hover:bg-red-700 transition-colors cursor-pointer"
+                disabled={isCheckingOut}
+                className="w-full mt-6 flex items-center justify-center rounded-full h-12 px-5 bg-primary text-white text-base font-bold hover:bg-red-700 disabled:opacity-75 transition-colors cursor-pointer"
               >
-                Proceed to Checkout
+                {isCheckingOut
+                  ? "Processing..."
+                  : user
+                    ? "Proceed to Checkout"
+                    : "Login to Checkout"}
               </button>
             </div>
           </div>

@@ -1,34 +1,43 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:8086";
+const BASE_URL = "https://loomnex-ecommercestore-backend.onrender.com";
 
+// Create instance with credentials for HttpOnly cookies
 const axiosClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: BASE_URL,
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 15000,
 });
 
-// Request interceptor — attach auth token when available
-axiosClient.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("auth_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-// Response interceptor — centralised error handling
+// Interceptor for standardized Spring Boot error handling
 axiosClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   (error) => {
-    // You can handle 401 / 403 globally here later
-    console.error("API Error:", error?.response?.data || error.message);
-    return Promise.reject(error);
+    // If the error originates from our Spring Boot global exception handler
+    if (error.response && error.response.data) {
+      const data = error.response.data;
+      
+      // Look for standardized Spring Boot error format
+      if (data.status || data.error || data.fieldErrors) {
+        return Promise.reject({
+          message: data.message || data.error || "An unexpected error occurred",
+          status: data.status,
+          fieldErrors: data.fieldErrors || {}, // e.g. {"email": "Invalid format"}
+          timestamp: data.timestamp,
+        });
+      }
+    }
+    
+    // Fallback for network errors (API sleeping, offline, etc.)
+    return Promise.reject({
+      message: error.message || "Network error. The server might be unreachable.",
+      status: error.response?.status || 500,
+      fieldErrors: {},
+    });
   }
 );
 

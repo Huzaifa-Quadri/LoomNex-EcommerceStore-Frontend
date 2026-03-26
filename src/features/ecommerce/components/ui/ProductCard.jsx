@@ -1,7 +1,13 @@
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../../auth/context/AuthContext";
 import { useCart } from "../../hooks/useCart";
+import toast from "react-hot-toast";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const {
     id,
@@ -19,8 +25,17 @@ export default function ProductCard({ product }) {
     image_url ||
     "https://via.placeholder.com/600x600?text=Product";
 
-  const handleAddToCart = () => {
-    addToCart({ id, name, price: Number(price), imageUrl: image });
+  const handleAddToCart = (e) => {
+    if (e) e.preventDefault();
+    
+    if (!user) {
+      toast.error("Please log in to add items to your cart");
+      navigate("/login");
+      return;
+    }
+    
+    addToCart({ id, name, price: Number(price), imageUrl: image }, 1);
+    toast.success("Added to cart");
   };
 
   return (
